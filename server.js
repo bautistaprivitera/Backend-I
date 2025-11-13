@@ -1,23 +1,27 @@
 const express = require('express');
-const productsRouter = require('./routes/products');
-const cartsRouter = require('./routes/carts');
+const handlebars = require('express-handlebars');
+const viewsRouter = require('./routes/view.router.js');
 
 const app = express();
 const port = 8080;
 
+//Config de handlebars
+app.engine('handlebars', handlebars.engine())
+app.set('views', './views');
+app.set('view engine','handlebars');
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-app.get('/', (req, res) => {
-  res.send('Hola desde express');
-});
+//Rutas
+app.use('/', viewsRouter);
 
-app.use('/api/products', productsRouter);
-app.use('/api/carts', cartsRouter);
-
+//Error por si no encuentra la ruta
 app.use((req, res) => {
   res.status(404).json({ error: 'Ruta no encontrada' });
 });
 
+//URL del server
 app.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
