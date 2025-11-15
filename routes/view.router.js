@@ -1,7 +1,9 @@
 const { Router } = require('express');
-const productos = require('../productos.js');
+let productos = require('../productos.js');
 
 const router = Router();
+
+let cart = [];
 
 router.get('/productos', (req, res) => {
 
@@ -20,6 +22,17 @@ router.get('/cart', (req, res) => {
 
 });
 
+
+//Traer un producto por su id
+router.get('/api/productos/:id', (req, res) => {
+
+  const id = Number(req.params.id);
+  const producto = productos.find(prod => prod.id === id);
+
+  if (!producto) {
+    return res.status(404).json({ error: 'Producto no encontrado' });
+  }
+});
 
 //Crear carrito
 router.post('/api/cart', (req, res) => {
