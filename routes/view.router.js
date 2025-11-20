@@ -28,10 +28,12 @@ router.get('/api/productos/:id', (req, res) => {
 
   const id = Number(req.params.id);
   const producto = productos.find(prod => prod.id === id);
-
+  
   if (!producto) {
     return res.status(404).json({ error: 'Producto no encontrado' });
   }
+
+  return res.json(producto);
 });
 
 //Crear carrito
@@ -44,22 +46,22 @@ router.post('/api/cart', (req, res) => {
 
   cart.push(newCart);
 
-  res.json({mensaje: 'Carrito creado', carrito: newCart});
+  return res.json({mensaje: 'Carrito creado', carrito: newCart});
 
 });
 
 
 //Ver productos del carrito
-router.post('/api/cart/:cid', (req, res) => {
+router.get('/api/cart/:cid', (req, res) => {
 
   const cartId = Number(req.params.cid);
-  const cart = cart.find(c => c.id === cartId);
+  const carrito = cart.find(c => c.id === cartId);
 
-  if (!cart) {
+  if (!carrito) {
     return res.status(404).json({ error: 'Carrito no encontrado' });
   }
 
-  res.json(carrito);
+  return res.json(carrito);
 
 });
 
@@ -70,7 +72,7 @@ router.post('/api/cart/:cid/product/:pid', (req, res) => {
   const cartId = Number(req.params.cid);
   const productId = Number(req.params.pid);
 
-  const carrito = carrito.find(c => c.id === cartId);
+  const carrito = cart.find(c => c.id === cartId);
 
   if (!carrito) {
     return res.status(404).json({ error: 'El carrito no existe' });
@@ -87,13 +89,16 @@ router.post('/api/cart/:cid/product/:pid', (req, res) => {
   const item = carrito.products.find(p => p.id === productId);
 
   if(item){
+
     item.quantity++;
-    res.json({mensaje: 'Producto agregado al carrito', carrito});
+
   }else{
+
     carrito.products.push({id: productId, quantity: 1});
+
   }
 
-  res.json({mensaje: 'Producto agregado correctamente al carrito', carrito});
+  return res.json({mensaje: 'Producto agregado correctamente al carrito', carrito});
 
 });
 
@@ -107,13 +112,13 @@ router.delete('/api/productos/:id', (req, res) => {
 
 if(!exist){
 
-  res.status(404).json({error: 'Producto no encontrado'})
+  return res.status(404).json({error: 'Producto no encontrado'})
 
 }
 
 productos = productos.filter(prod => prod.id !== id)
 
-res.json({mensaje: 'Producto eliminado', productos})
+return res.json({mensaje: 'Producto eliminado', productos})
 
 })
 
@@ -121,15 +126,20 @@ res.json({mensaje: 'Producto eliminado', productos})
 //Modificar un producto
 router.put('/api/productos/:id', (req, res) => {
   
-  const id = req.params.id
+  const id = Number(req.params.id)
   const data = req.body
-  const producto = productos.find(prod => prod.id === id)
+  const producto = productos.findIndex(prod => prod.id === id)
 
-if(!producto){
+if(producto === -1){
 
-  res.status(404).json({error: 'Producto no encontrado'})
+  return res.status(404).json({error: 'Producto no encontrado'})
 
-}})
+}
+
+productos[producto] = {...productos[producto], ...data}
+
+return res.json({mensaje: 'Producto modificado',producto: productos[producto]})
+})
 
 module.exports = router;
 
