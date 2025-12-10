@@ -4,7 +4,13 @@ let productos = require('../productos.js');
 const router = Router();
 
 let cart = [];
+router.get('/', (req, res) => {
 
+  res.render('index', {
+     layout: 'main',
+      curso: 'Backend' 
+    });
+})
 router.get('/productos', (req, res) => {
 
   res.render('productos', {
