@@ -3,7 +3,7 @@ import handlebars from 'express-handlebars';
 import viewsRouter from './routes/view.router.js';
 import { Server } from 'socket.io';
 import http from 'http';
-let products = require('./products.js');
+import products from './products.js';
 
 const app = express();
 app.use(express.static('public'));
@@ -12,7 +12,7 @@ const port = 8080;
 //Config de handlebars
 app.engine('handlebars', handlebars.engine())
 app.set('views', './views');
-app.set('view engine','handlebars');
+app.set('view engine', 'handlebars');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -30,7 +30,7 @@ io.on('connection', (socket) => {
 
   console.log('Un usuario se ha conectado');
 
-  socket.emit('updateProducts', products); 
+  socket.emit('updateProducts', products);
 
   //Agregar producto
   socket.on('newProduct', (data) => {
@@ -40,19 +40,19 @@ io.on('connection', (socket) => {
       price: Number(data.price)
     }
 
-    products.push(newProduct); 
+    products.push(newProduct);
 
     io.emit('updateProducts', products);
   });
 
-});
-
-//Eliminar producto
-socket.on('deleteProduct', (id) => {
+  //Eliminar producto
+  socket.on('deleteProduct', (id) => {
     id = Number(id);
     products = products.filter(p => p.id !== id);
     io.emit('updateProducts', products);
   });
+
+});
 
 //Error por si no encuentra la ruta
 app.use((req, res) => {
