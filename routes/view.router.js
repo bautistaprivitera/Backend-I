@@ -4,9 +4,10 @@ import products from '../products.js';
 const router = Router();
 
 let cart = [];
+
 router.get('/products', (req, res) => {
 
-  res.render('products', {
+  res.render('home', {
     layout: 'main',
     titulo: 'Listado de productos',
     products,
@@ -14,6 +15,16 @@ router.get('/products', (req, res) => {
 
   });
 });
+
+router.get('/realtimeproducts', (req, res) => {
+  res.render('realTimeProducts', { layout: 'main' });
+});
+
+
+router.get('/', (req, res) => {
+  res.redirect('/products');
+});
+
 
 router.get('/cart', (req, res) => {
 

@@ -3,11 +3,18 @@ import handlebars from 'express-handlebars';
 import viewsRouter from './routes/view.router.js';
 import { Server } from 'socket.io';
 import http from 'http';
-import products from './products.js';
+import productsData from './products.js';
+//import mongoose from 'mongoose';
+//import dotenv from 'dotenv';
 
 const app = express();
 app.use(express.static('public'));
+app.use('/js', express.static('js'));
 const port = 8080;
+
+//dotenv.config();
+
+//moongoose.connect(process.env.MONGO_URL);
 
 //Config de handlebars
 app.engine('handlebars', handlebars.engine())
@@ -24,6 +31,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 app.set('io', io);
+
+let products = [...productsData];
 
 //Conexion de sockets
 io.on('connection', (socket) => {
@@ -60,6 +69,6 @@ app.use((req, res) => {
 });
 
 //URL del server
-app.listen(port, () => {
+server.listen(port, () => {
   console.log(`Servidor corriendo en http://localhost:${port}`);
 });
