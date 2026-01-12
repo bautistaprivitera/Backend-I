@@ -1,20 +1,30 @@
 import express from 'express';
 import handlebars from 'express-handlebars';
-import viewsRouter from './routes/view.router.js';
+import productsRouter from './routes/products.routes.js';
 import { Server } from 'socket.io';
 import http from 'http';
-import productsData from './products.js';
-//import mongoose from 'mongoose';
-//import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import Product from './model/products.model.js';
 
 const app = express();
 app.use(express.static('public'));
 app.use('/js', express.static('js'));
 const port = 8080;
 
-//dotenv.config();
+dotenv.config();
 
-//moongoose.connect(process.env.MONGO_URL);
+const connectMongo = async () => {
+  try { 
+    await mongoose.connect(process.env.MONGO_URL);
+    console.log('Conectado a la base de datos');
+  } catch (error) {
+    console.error('Error al conectar a la base de datos', error);
+  }
+}
+
+await connectMongo();
+
 
 //Config de handlebars
 app.engine('handlebars', handlebars.engine())
@@ -25,40 +35,45 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Rutas
-app.use('/', viewsRouter);
+app.use('/', productsRouter);
 
 const server = http.createServer(app);
 const io = new Server(server);
 
 app.set('io', io);
 
-let products = [...productsData];
-
 //Conexion de sockets
-io.on('connection', (socket) => {
+io.on('connection', async (socket) => {
 
   console.log('Un usuario se ha conectado');
 
-  socket.emit('updateProducts', products);
+  socket.emit('updateProducts', await Product.find().lean());
 
   //Agregar producto
-  socket.on('newProduct', (data) => {
-    const newProduct = {
-      id: products.length + 1,
-      title: data.title,
-      price: Number(data.price)
+  socket.on('newProduct', async (data) => {
+    try {
+      await Product.create ( {
+        title: data.title,
+        price: Number(data.price),
+        stock: Number(data.stock ?? 0)
+    })
+
+    io.emit('updateProducts', await Product.find().lean());
+    } catch (error) {
+      console.error('Error creando producto');
+      socket.emit('No se pudo crear el producto');
     }
-
-    products.push(newProduct);
-
-    io.emit('updateProducts', products);
   });
 
   //Eliminar producto
-  socket.on('deleteProduct', (id) => {
-    id = Number(id);
-    products = products.filter(p => p.id !== id);
-    io.emit('updateProducts', products);
+  socket.on('deleteProduct', async (id) => {
+    try{
+      await Product.findByIdAndDelete(id);
+      io.emit('updateProducts', await Product.find().lean());
+    }catch (error) {
+      console.error('Error eliminando producto');
+      socket.emit('No se pudo eliminar el producto');
+    }
   });
 
 });
