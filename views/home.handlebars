@@ -1,14 +1,29 @@
 <h2>{{titulo}}</h2>
 
-{{#if hayProductos}}
-<ul>
-    {{#each products}}
-    <li>
-    <strong>{{this.title}}</strong>- ${{this.price}}
-    </li>
+{{#if products.length}}
+    <ul>
+        {{#each products}}
+        <li>
+            <strong>{{this.title}}</strong>- ${{this.price}}
+        </li>
 
-    {{/each}}
-</ul>
-{{else}}
-<p>no hay productos</p>
+        {{/each}}
+    </ul>
+    {{else}}
+        <p>no hay productos</p>
+{{/if}}
+
+
+{{#if totalPages}}
+    <nav>
+        {{#if hasPrevPage}}
+            <a href="/products?page={{prevPage}}&limit={{limit}}">Anterior</a>
+        {{/if}}
+
+        <span>Pagina {{page}} / {{totalPages}}</span>
+
+        {{#if hasNextPage}}
+            <a href="/products?page={{nextPage}}&limit={{limit}}">Siguiente</a>
+        {{/if}}
+    </nav>
 {{/if}}
