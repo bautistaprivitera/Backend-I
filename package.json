@@ -15,7 +15,7 @@
     "express": "^5.1.0",
     "express-handlebars": "^8.0.3",
     "mongodb": "^7.0.0",
-    "mongoose": "^9.0.1",
+    "mongoose": "^9.1.4",
     "mongoose-paginate-v2": "^1.9.1",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1"
