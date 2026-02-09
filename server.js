@@ -35,7 +35,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Rutas
-app.use('/', productsRouter);
+app.use('/api/products', productsRouter);
 
 const server = http.createServer(app);
 const io = new Server(server);
