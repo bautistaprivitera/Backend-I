@@ -6,6 +6,7 @@ import http from 'http';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './model/products.model.js';
+import cartRouter from './routes/cart.routes.js';
 
 const app = express();
 app.use(express.static('public'));
@@ -36,6 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 
 //Rutas
 app.use('/api/products', productsRouter);
+app.use('/api/carts', cartRouter);
 
 const server = http.createServer(app);
 const io = new Server(server);
