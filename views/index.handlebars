@@ -1,0 +1,64 @@
+<h1>Listado de Productos</h1>
+
+<form method="GET" action="/products">
+  <input type="text" name="cartId" placeholder="CartId para agregar" value="{{cartId}}" />
+  <input type="text" name="query" placeholder="Categoria o true/false" value="{{query}}" />
+  
+  <select name="sort">
+    <option value="">Sin orden</option>
+    <option value="asc">Precio asc</option>
+    <option value="desc">Precio desc</option>
+  </select>
+
+  <input type="number" name="limit" min="1" value="{{limit}}" />
+  <button type="submit">Aplicar</button>
+</form>
+
+<hr>
+
+{{#each products}}
+  <div style="margin-bottom:15px;">
+    <b>{{this.title}}</b> - ${{this.price}} - {{this.category}}
+
+    <br>
+    <a href="/products/{{this._id}}?cartId={{../cartId}}">Ver detalle</a>
+
+    {{#if ../cartId}}
+      <button onclick="addToCart('{{../cartId}}','{{this._id}}')">
+        Agregar al carrito
+      </button>
+    {{/if}}
+  </div>
+{{/each}}
+
+<hr>
+
+<div>
+  {{#if hasPrevPage}}
+    <a href="/products?page={{prevPage}}&limit={{limit}}&sort={{sort}}&query={{query}}&cartId={{cartId}}">
+      ← Anterior
+    </a>
+  {{/if}}
+
+  Página {{page}} de {{totalPages}}
+
+  {{#if hasNextPage}}
+    <a href="/products?page={{nextPage}}&limit={{limit}}&sort={{sort}}&query={{query}}&cartId={{cartId}}">
+      Siguiente →
+    </a>
+  {{/if}}
+</div>
+
+<script>
+async function addToCart(cid, pid) {
+  const res = await fetch(`/api/carts/${cid}/products/${pid}`, {
+    method: "POST"
+  });
+  const data = await res.json();
+  if (data.status === "success") {
+    alert("Producto agregado");
+  } else {
+    alert("Error");
+  }
+}
+</script>

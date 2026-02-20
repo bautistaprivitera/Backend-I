@@ -17,30 +17,39 @@ export const getProduct = async (req, res) => {
         const query = req.query.query;
 
         let filter = {};
-        if (query === "true" || query === "false") {
-            filter = { status : query === "true" };
+        if (query !== undefined && query !== null && query !== '') {
+            if (query === 'true' || query === 'false'){
+                filter = { status : query === "true" };
+            }
         }else{
             filter = { category : query };
         }
 
-        const sortOptions = sort === 'asc' ? { price: 1 } : sort === 'desc' ? { price: -1 } : {};
+        const sortOptions = undefined;
+        if (sort === "asc") sortOptions = { price: 1 };
+        if (sort === "desc") sortOptions = { price: -1 };
 
-        const result = await Product.paginate(filter, {
+        const options = {
             page,
             limit,
-            sort: Object.keys(sortOptions).lenght ? sortOptions : undefined,
+            sort: sortOptions,
             lean: true
-        })
+        }
+
+        const result = await productService.getProduct(filter, options);
 
         const baseUrl =  `${req.protocol}://${req.get('host')}${req.baseUrl}`; 
 
         const buildLink = (targetPage) => {
-            `${baseUrl}?limit=${limit}&page=${targetPage}` +
-            (sort ? `&sort=${sort}` : '') +
-            (query ? `&query=${query}` : '');
+            const params = new URLSearchParams();
+            params.set('page', targetPage);
+            params.set('limit', limit);
+            if (sort) params.set('sort', sort);
+            if (query) params.set('query', query);
+            return `${baseUrl}?${params.toString()}`
         }
 
-        res.json({
+        return res.status({
             status: 'success',
             payload: result.docs,
             totalPages: result.totalPages,

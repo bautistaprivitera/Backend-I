@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import Product from './model/products.model.js';
 import cartRouter from './routes/cart.routes.js';
+import viewsRouter from './routes/view.routes.js';
 
 const app = express();
 app.use(express.static('public'));
@@ -36,8 +37,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 //Rutas
+app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
+app.get("/api/products/debug/count", async (req, res) => {
+  try {
+    const count = await Product.countDocuments();
+    res.json({ count });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 const server = http.createServer(app);
 const io = new Server(server);
