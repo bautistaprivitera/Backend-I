@@ -10,7 +10,7 @@ router.get('/products', async (req, res) => {
         const page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
         const sort = req.query.sort;
         const query = req.query.query;
-        const cartId = req.session.cartId || "";
+        const cartId = req.query.cartId || req.session?.cartId || "";
 
         let filter = {};
         if (query !== undefined && query !== null && query !== '') {
@@ -43,7 +43,20 @@ router.get('/products', async (req, res) => {
     }
 })
 
-router.get('/products/:cid', async (req, res) => {
+router.get('/products/:pid', async (req, res) => {
+    try {
+        const { pid } = req.params;
+        const cartId = req.query.cartId || req.session?.cartId || "";
+
+        const product = await Product.findById(pid).lean();
+        if (!product) return res.status(404).json({ error: 'Product not found' });
+        res.render('productDetail', { product, cartId });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+})
+
+router.get('/carts/:cid', async (req, res) => {
     try {
         const { cid } = req.params;
         const cart = await Cart.findById(cid).populate('products.product').lean();

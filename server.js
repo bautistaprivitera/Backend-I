@@ -40,15 +40,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/', viewsRouter);
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartRouter);
-app.get("/api/products/debug/count", async (req, res) => {
-  try {
-    const count = await Product.countDocuments();
-    res.json({ count });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
 
 const server = http.createServer(app);
 const io = new Server(server);

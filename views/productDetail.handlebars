@@ -5,24 +5,36 @@
 <p><b>Stock:</b> {{product.stock}}</p>
 <p><b>Status:</b> {{product.status}}</p>
 
-<a href="/products?cartId={{cartId}}">Volver</a>
+<div style="display:flex; gap:10px; margin-top:12px;">
+  <a href="/products?cartId={{cartId}}">Volver</a>
 
-{{#if cartId}}
-  <button onclick="addToCart('{{cartId}}','{{product._id}}')">
-    Agregar al carrito
+  {{#if cartId}}
+  <button type="button" onclick="addToCart('{{cartId}}','{{product._id}}')">
+  Agregar al carrito
   </button>
+  {{else}}
+  <span style="color:#888;">(Pasá cartId por query)</span>
+  {{/if}}
+</div>
+
+<div>
+  {{#if cartId}}
+  <div style="margin:10px 0;">
+    <a href="/carts/{{cartId}}">Ver carrito</a>
+  </div>
 {{/if}}
+</div>
 
 <script>
-async function addToCart(cid, pid) {
-  const res = await fetch(`/api/carts/${cid}/products/${pid}`, {
-    method: "POST"
-  });
-  const data = await res.json();
-  if (data.status === "success") {
-    alert("Producto agregado");
-  } else {
-    alert("Error");
+  async function addToCart(cid, pid) {
+    const res = await fetch(`/api/carts/${cid}/products/${pid}`, {
+      method: "POST"
+    });
+    const data = await res.json();
+    if (data.status === "success") {
+      alert("Producto agregado");
+    } else {
+      alert("Error");
+    }
   }
-}
 </script>

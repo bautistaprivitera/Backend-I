@@ -12,6 +12,14 @@
 
   <input type="number" name="limit" min="1" value="{{limit}}" />
   <button type="submit">Aplicar</button>
+
+  <div>
+    {{#if cartId}}
+    <div style="margin:10px 0;">
+      <a href="/carts/{{cartId}}">Ver mi carrito</a>
+    </div>
+  {{/if}}
+</div>
 </form>
 
 <hr>
